@@ -86,32 +86,214 @@
 		<br>
 		
 		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		In orde
+		In order to optimise our ray intersections, we chose to implement a bounding volume hierarchy, or BVH as we will refer to it in the rest of this paragraph.
+		BVH's are a spatial acceleration structure that works to reduce the number of ray intersections we need to check.
+		We constructed the BVH by recusrively partitioning and splitting our primitives into left and right child nodes dependent on their spatial distribution.
+		We used a heuristic to split the primitives into left and right child nodes, which was the surface area of the bounding box of the primitives and we parititioned our primitives based on the median position on that axis.
+		If our primitives fall on one side of the split, we defaulted to a midpoint split to prevent degenerate trees, resulting in us having a balanced BVH tree.
+
+		<br>
+		Using our accelation, we were able to render large <code>.dae</code> files without a lot of computation power. Below are images of complex <code>.dae</code> files rendered with our BVH.
+
+		<br>
+		<br>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/image1.png" width="400px"/>
+				  <figcaption></figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part2/image2.png" width="400px"/>
+				  <figcaption></figcaption>
+				</td>
+			  </tr>
+			</table>
+		  </div>
+
+		<br>
+		<br>
+
+		We timed our rendering with and without BVH in order to understand the impact. Without BVH, our rendering scaled linearly by the number of primitives, making it much slower as the complexity increased.
+		Using BVH, we were able to reduce the overall time complexity that it took.
+		**JORDAN ADD SOME TIMES PLS**
+
+		<br>
+		<br>
 
 		<h2>Part 3: Direct Illumination</h2>
 		Within part 3, we focused on direct illumination, more specifically we focused on uniform hemisphere sampling for illumination and importance sampling.
 		Both of these sampling methods are used to reduce compute time by estimating how much light reaches the camera from many different directions.
+		Uniform hemisphere sampling samples random directions in the hemisphere of the camera and checks if the direction leads to a light source.
+		Uniform hemisphere is pretty inefficient as there are often a lot of sampling directions that contribute little / no light, so we have a lot of noise and a slower rendering speed
+		Importance sampling is a step up from uniform hemisphere sampling as it samples directions based on the relative importance of each direction.
+		Essentially, we sample directions that we know point towards a given light source, and so by focusing on these directions we can reduce noise and improve soft shadows.
+
+		We have rendered images below with using both of the sampling methods, and as you can see there is a significant difference in the how the sampling methods render.
+
+		<br>
+		<br>
 		
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/image1.png" width="400px"/>
+				  <figcaption>Uniform hemisphere sampling</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/image2.png" width="400px"/>
+				  <figcaption>Importance sampling</figcaption>
+				</td>
+			  </tr>
+			</table>
+		  </div>
+		
+		<br>
+		As you can see, uniform hemisphere sampling contains a significant amount of noise as most sampled directions are not pointing towards a light source.
+		However, importance sampling is able to reduce the noise and improve the quality of the image as well as quicken the rendering time. 
+		Therefore, with the same number of samples, you can see that important sampling produces clearer shadows and a more accurate illumination overall, making it the better method for lighting estimations.
+		
+		<br>
+		<br>
 
 		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		In Part 4, we implemented indirect lighting using recursive path tracing in at_least_one_bounce_radiance. After computing direct illumination, we sampled a new direction from the surface’s BSDF and recursively traced rays to estimate light arriving after bouncing off other surfaces. This captured indirect effects like color bleeding and soft illumination in corners. We visualized full global illumination using 1024 samples per pixel, showing significantly more realistic lighting than direct-only rendering. To isolate indirect lighting, we temporarily disabled direct light and observed that indirect lighting alone captures subtle ambient effects, especially in occluded regions. For CBbunny.dae, we rendered only the m-th bounce of light using different max_ray_depth values, AcumBounces=false. The second bounce introduces soft indirect fill light, while the third bounce propagates light further into shadowed regions, improving realism compared to rasterization. We also compared accumulated vs. unaccumulated bounces; accumulated renders became brighter and more complete as the number of bounces increased, while unaccumulated renders isolated how each bounce contributes. We rendered CBbunny.dae using Russian Roulette with depths from 0 to 100. Light paths contribute diminishing amounts at higher depths, but subtle effects like soft shadows and interreflections become richer. Finally, using four light rays, we rendered a scene with varying sample-per-pixel counts (1, 2, 4, 8, 16, 64, and 1024). As expected, noise decreased substantially with higher samples, and shadows, reflections, and illumination converged to physically accurate results.
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/image1.png" width="400px"/>
+				  <figcaption>Global Illumination</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image2.png" width="400px"/>
+					<figcaption>Direct Illumination only</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image3.png" width="400px"/>
+					<figcaption>Indirect Illumination only</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image4.png" width="400px"/>
+					<figcaption>cb bounce with 0 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image5.png" width="400px"/>
+					<figcaption>cb bounce with 1 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image6.png" width="400px"/>
+					<figcaption>cb bounce with 2 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image7.png" width="400px"/>
+					<figcaption>cb bounce with 3 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image8.png" width="400px"/>
+					<figcaption>cb bounce with 4 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image9.png" width="400px"/>
+					<figcaption>cb bounce with 5 depth</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image10.png" width="400px"/>
+					<figcaption>Russian Roulette 0</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image11.png" width="400px"/>
+					<figcaption>Russian Roulette 1</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image12.png" width="400px"/>
+					<figcaption>Russian Roulette 2</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image13.png" width="400px"/>
+					<figcaption>Russian Roulette 3</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image14.png" width="400px"/>
+					<figcaption>Russian Roulette 4</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image15.png" width="400px"/>
+					<figcaption>Russian Roulette 100</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image16.png" width="400px"/>
+					<figcaption>Sample per pixel 1</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image17.png" width="400px"/>
+					<figcaption>Sample per pixel 2</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image18.png" width="400px"/>
+					<figcaption>Sample per pixel 4</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image19.png" width="400px"/>
+					<figcaption>Sample per pixel 8</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image20.png" width="400px"/>
+					<figcaption>Sample per pixel 16</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image21.png" width="400px"/>
+					<figcaption>Sample per pixel 64</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part4/image22.png" width="400px"/>
+					<figcaption>Sample per pixel 1024</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
 
 		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		In Part 5, we implemented adaptive sampling to reduce unnecessary computation while maintaining image quality. Instead of taking a fixed number of samples per pixel, we estimate the mean and variance of the pixel’s luminance as sampling progresses. After every batch of samples (controlled by samplesPerBatch), we check whether the confidence interval around the estimated mean is within a user-defined threshold (maxTolerance). If it is, sampling stops early for that pixel; if not, sampling continues until either the pixel converges or we reach the max allowed samples.
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		In our implementation within raytrace_pixel, we compute the illumination for each sample and accumulate both the sum and sum of squares. Once the number of samples in a pixel reaches multiple samplesPerBatch, we calculate the standard deviation and use the 1.96× standard error bound to construct a 95% confidence interval. If this interval is small enough relative to the mean (as defined by maxTolerance), we stop sampling and finalize the pixel value. This allows the renderer to spend more samples in noisy regions like soft shadows or caustics and fewer in smoother areas like large flat surfaces.
+
+		To test this, we rendered two scenes with 2048 max samples per pixel, using one light sample and a max ray depth of 5. In the sample rate visualizations, brighter pixels received more samples due to higher noise, while darker pixels required fewer. The final rendered results were visually indistinguishable from uniformly sampled renders but required significantly less computation overall.
+
+		<br>
+		<br>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/image1.png" width="400px"/>
+				  <figcaption>Sample rate visualization 1</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part5/image2.png" width="400px"/>
+					<figcaption>Sample rate visualization 2</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part5/image3.png" width="400px"/>
+					<figcaption>Final render 1</figcaption>
+				</td>
+				<td style="text-align: center;">
+					<img src="images/part5/image4.png" width="400px"/>
+					<figcaption>Final render 2</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
 		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
 		</div>
 	</body>
 </html>
