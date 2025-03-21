@@ -33,12 +33,14 @@
 		<br>
 
 		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-sts/hw3/index.html">https://cal-cs184-student.github.io/hw-webpages-sts/hw3/index.html</a>
+		<br>
 		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-dasts">https://github.com/cal-cs184-student/sp25-hw3-daduan</a>
 		
 		<figure>
 			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
 			<figcaption>You can add images with captions!</figcaption>
 		</figure>
+		<br>
 
 		<!--
 		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
@@ -405,6 +407,8 @@
 		In our implementation within raytrace_pixel, we compute the illumination for each sample and accumulate both the sum and sum of squares. Once the number of samples in a pixel reaches multiple samplesPerBatch, we calculate the standard deviation and use the 1.96× standard error bound to construct a 95% confidence interval. If this interval is small enough relative to the mean (as defined by maxTolerance), we stop sampling and finalize the pixel value. This allows the renderer to spend more samples in noisy regions like soft shadows or caustics and fewer in smoother areas like large flat surfaces.
 
 		To test this, we rendered two scenes with 2048 max samples per pixel, using one light sample and a max ray depth of 5. In the sample rate visualizations, brighter pixels received more samples due to higher noise, while darker pixels required fewer. The final rendered results were visually indistinguishable from uniformly sampled renders but required significantly less computation overall.
+		Overall, adaptive sampling lets us achieve a generally noise-free result without the need for a fixed number of samples per pixel and it allows us to ensure realistic rendering by dynamically allocating samples based on the amount of noise in each realism without sacrificing computation.
+		This was especially effective for monte-carlo path tracing as the variation in lighting is high and shadows change across the image. As a result of adaptive sampling, we are better able to render monte carlo path tracing with less computation.
 
 		<br>
 		<br>
@@ -424,8 +428,6 @@
 			  </tr>
 			</table>
 		</div>
-
-		
 		</div>
 	</body>
 </html>
