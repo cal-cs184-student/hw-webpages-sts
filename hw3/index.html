@@ -45,7 +45,15 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		Within this homework, our main goal was to build a ray tracer, such that we could render physicall realistic images.
+		We began by first implementing ray generation and intersection for those corresponding rays, which we further built up on by implementing a BVH to help speed up ray tracing.
+		After that, we explored different ways to directly illuminate a scene, uniform and importance sampling and we built up upon that by adding in indirect illumination in a further part.
+		We added in indirect illumination through recursive path tracing, where we sampled a new direction from the surface’s BSDF and recursively traced rays to estimate light arriving after bouncing off other surfaces.
+		We also added in Russian Roulette to help speed up our ray-tracing as it allowed us to terminate particular rays early.
+		Finally, we added in adaptive sampling, allowing our path tracer to allocation computation where it is needed as opposed to uniformally.
+		Throughout this project, we learned how to generate and render physically realistic lighting and became not only more familiar with image rendering but appreciated how our computers generate images quickly and efficiently.
+		<br>
+		I also want to mention, in Task 3 we used chatgpt to help us debug through the code. We encountered an error where our code would cause an unusually long time to render on both the instructional machines and on our local computers, as a result we queried with chatgpt to perform rubber ducky debugging and help identify where potential slowness could be arising from.
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
 		Within part 1, our main task was to implement camera ray creation and their corresponding intersection.
