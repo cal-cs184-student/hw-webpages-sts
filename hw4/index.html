@@ -113,19 +113,28 @@
 				  <img src="2damp87.png" width="400px"/>
 				  <figcaption>Parameter Damping=0.87</figcaption>
 				</td>
-			</td>
-			<td style="text-align: center;">
-			  <img src="json4.png" width="400px"/>
-			  <figcaption>pinned4 final resting</figcaption>
-			</td>
-		</td>
-		<td style="text-align: center;">
-		  <img src="json5.png" width="400px"/>
-		  <figcaption>pinned4 final resting</figcaption>
-		</td>
+
 			  </tr>
 			</table>
 		</div>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="json4.png" width="400px"/>
+				  <figcaption>pinned4 final resting</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="json5.png" width="400px"/>
+				  <figcaption>pinned4 final resting</figcaption>
+				</td>
+		
+
+			  </tr>
+			</table>
+		</div>
+
 		<p>Next, as we can see from changing the spring constants and different variables, if a low ks, or spring is applied to the cloth, the cloth falling will deform at the top and middle parts more. In a high ks or spring constant, it will barely deform, much less noticiable than a low spring constant. When it is low, the arc of the cloth at the top is larger and has a bigger radius, and on the flip side, smaller for higher spring constant. In a small density, the cloth falls down and comes to rest very fast and doesn't deform as much because of its low weight, but when its heavier in a larger density, the deformation at the top is much bigger, and swinging of the cloth when it falls, thus taking longer for it to come to rest. In terms of damping, at lower damping, the cloth swings a lot when it falls because of the low energy loss as we seen in lecture, and when we apply a higher damping, it just falls down and barely swings.</p>
 		<h2>Part 3: Handling collisions with other objects</h2>
 		In task 3, we are now tackling the issue of handing collisions of different objects, in this case a sphere. We have already implemented the dynamic behavior of the falling cloth, and this will be similar to where we calculate the point mass and where it will intersect with the sphere and plane, and then take that point and update the position based on some basic math we learned in class to calculate the correction vector that has been scaled down by friction. Something that we need to take note that is we don't want to end up on both sides of the pane, so if the points last position of the mass and current position of the mass are on different sides of the plane, this tell us that there is a collision between the mass and plane! Wow! So, we have to calculate a new correction vector and scale it by 1-friction to the point mass last position.
